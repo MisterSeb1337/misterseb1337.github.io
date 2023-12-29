@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Editor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+
+        #image-container {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            overflow: hidden;
+            border-radius: 50%;
+            margin: 20px auto;
+            background-color: #f0f0f0;
+        }
+
+        #output-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        #overlay-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        #image-input {
+            display: none;
+        }
+
+        #upload-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+        }
+
+        #save-btn {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Image Editor</h1>
+
+    <label for="image-input" id="upload-btn">Upload Image</label>
+    <input type="file" id="image-input" accept="image/*">
+
+    <div id="image-container">
+        <img id="output-image">
+        <img id="overlay-image" src="https://cdn.discordapp.com/attachments/993959687257071626/1190352274392887338/Titre.png?ex=65a17cf1&is=658f07f1&hm=e43fbfa6c41a24b4da977c27268ce8981bb5cab1e6f339260d73b0bd618d2650&">
+    </div>
+
+    <button id="save-btn" onclick="saveImage()">Save Image</button>
+
+    <script>
+        document.getElementById('image-input').addEventListener('change', handleImageUpload);
+
+        function handleImageUpload(event) {
+            const input = event.target;
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const outputImage = document.getElementById('output-image');
+                    outputImage.src = e.target.result;
+
+                    // Clear the previous image
+                    URL.revokeObjectURL(outputImage.src);
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function saveImage() {
+            const outputImage = document.getElementById('output-image');
+            const overlayImage = document.getElementById('overlay-image');
+            const canvas = document.createElement('canvas');
+            canvas.width = 400;
+            canvas.height = 400;
+            const context = canvas.getContext('2d');
+            context.arc(200, 200, 200, 0, 2 * Math.PI);
+            context.clip();
+            context.drawImage(outputImage, 0, 0, 400, 400);
+            context.drawImage(overlayImage, 0, 0, 400, 400);
+
+            const link = document.createElement('a');
+            link.href = canvas.toDataURL('image/png');
+            link.download = 'output_image.png';
+            link.click();
+        }
+    </script>
+</body>
+</html>
